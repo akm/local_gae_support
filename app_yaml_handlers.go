@@ -45,14 +45,15 @@ func (s AppYamlHandlers) NewHandler(defaultHandler http.Handler) http.HandlerFun
 				log.Printf("AppYamlHandlers[%d]: %s ==> %s\n", idx, i.URL, path)
 				i.ProcessHeaders(w, r)
 
-				if _, err := ioutil.ReadFile(path); err != nil {
+				if b, err := ioutil.ReadFile(path); err != nil {
 					log.Printf("Failed to read file to return because of %v", err)
 					continue
 				} else {
-					log.Printf("Returning static file %s", path)
+					log.Printf("Returning static file %s size %d bytes", path, len(b))
 				}
 
 				http.ServeFile(w, r, path)
+				w.WriteHeader(http.StatusOK)
 				return
 			}
 		}

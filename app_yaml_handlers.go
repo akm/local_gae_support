@@ -1,9 +1,11 @@
 package localgaesupport
 
 import (
+	"bytes"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 type AppYamlHandlers []*AppYamlHandler
@@ -49,11 +51,16 @@ func (s AppYamlHandlers) NewHandler(defaultHandler http.Handler) http.HandlerFun
 					log.Printf("Failed to read file to return because of %v", err)
 					continue
 				} else {
+					// http.ServeFile(w, r, path)
 					log.Printf("Returning static file %s size %d bytes", path, len(b))
+					fi, err := os.Stat(path)
+					if err != nil {
+						http.Error(w, err.Error(), http.StatusInternalServerError)
+					} else {
+						http.ServeContent(w, r, path, fi.ModTime(), bytes.NewReader(b))
+					}
 				}
 
-				http.ServeFile(w, r, path)
-				w.WriteHeader(http.StatusOK)
 				return
 			}
 		}

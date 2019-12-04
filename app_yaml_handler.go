@@ -19,7 +19,7 @@ type AppYamlHandler struct {
 }
 
 func (h *AppYamlHandler) Setup() error {
-	s := `\A` + h.StaticFiles + `\z`
+	s := `\A` + h.URL + `\z`
 	re, err := regexp.Compile(s)
 	if err != nil {
 		log.Printf("Invalid regexp %v because of %v", s, err)

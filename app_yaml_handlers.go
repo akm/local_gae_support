@@ -28,8 +28,10 @@ func (s AppYamlHandlers) Select(f func(*AppYamlHandler) bool) AppYamlHandlers {
 
 func (s AppYamlHandlers) NewHandler(defaultHandler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("AppYamlHandlers: %v %q\n", r.Method, r.URL.Path)
 		if r.Method == http.MethodGet {
-			for _, i := range s {
+			for idx, i := range s {
+				log.Printf("AppYamlHandlers[%d]: %s\n", idx, i.URL)
 				m := i.pattern.FindStringSubmatch(r.URL.Path)
 				if m == nil {
 					continue
@@ -39,6 +41,7 @@ func (s AppYamlHandlers) NewHandler(defaultHandler http.Handler) http.HandlerFun
 					log.Printf("WARNING BuildPath returned an error: %v\n", err)
 					continue
 				}
+				log.Printf("AppYamlHandlers[%d]: %s ==> %s\n", idx, i.URL, path)
 				i.ProcessHeaders(w, r)
 				http.ServeFile(w, r, path)
 				return

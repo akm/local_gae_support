@@ -1,6 +1,7 @@
 package localgaesupport
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -19,6 +20,11 @@ func Static(appYamlPath string, defaultHandler http.Handler) (http.Handler, erro
 		return i.Setup()
 	}); err != nil {
 		return nil, err
+	}
+
+	log.Printf("Starting loalgaesuuport with %s\n", appYamlPath)
+	for idx, i := range handlers {
+		log.Printf("%s[%d]: %s", appYamlPath, idx, i.URL)
 	}
 
 	return handlers.NewHandler(defaultHandler), nil
